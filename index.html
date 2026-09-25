@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>London by Tube &amp; Thrift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F1F3F6; --surface:#FFFFFF; --ink:#15181E; --muted:#596170; --rule:#D8DCE3;
+  --accent:#1C3F94; --accent-soft:#E3E9F6; --warn:#A5470E; --warn-soft:#FBEBDD;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101218; --surface:#191C23; --ink:#E7E9EE; --muted:#9AA2B0; --rule:#2B303A;
+    --accent:#93AEF0; --accent-soft:#1D2641; --warn:#F2A873; --warn-soft:#3A2517;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101218; --surface:#191C23; --ink:#E7E9EE; --muted:#9AA2B0; --rule:#2B303A;
+  --accent:#93AEF0; --accent-soft:#1D2641; --warn:#F2A873; --warn-soft:#3A2517;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.4vw,2rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0;max-width:68ch}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eyebrow{font:600 .74rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+section{display:flex;flex-direction:column;gap:18px}
+.sechead{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--ink);padding-top:14px}
+
+/* header */
+header{display:flex;flex-direction:column;gap:18px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.fact{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.fact b{font-weight:600}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-weight:600;font-size:.9rem;text-decoration:none;padding:6px 12px;border:1px solid var(--rule);border-radius:999px;background:var(--surface);color:var(--ink)}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+
+/* station chip: roundel-style ring in the line colour */
+.stn{display:inline-flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap}
+.stn i{width:12px;height:12px;border-radius:50%;border:3px solid var(--c,#888);display:inline-block;flex:none;background:var(--surface)}
+.lines{font-size:.85rem;color:var(--muted);font-weight:500}
+
+/* callout */
+.todo{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.todo h3{color:var(--warn)}
+.todo ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
+
+/* hotel table */
+.tscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.93rem}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--rule)}
+th{font:600 .74rem/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pick{display:inline-block;font:700 .68rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--surface);padding:4px 7px;border-radius:3px;margin-left:6px;vertical-align:2px}
+
+/* itinerary */
+.days{display:flex;flex-direction:column;gap:14px}
+.day{background:var(--surface);border:1px solid var(--rule);border-radius:6px;display:grid;grid-template-columns:120px 1fr}
+.date{padding:18px 16px;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:4px}
+.date .dow{font:600 .74rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.date .dn{font:800 2.4rem/1 var(--display);font-variant-numeric:tabular-nums}
+.date .mo{font-weight:600;color:var(--muted)}
+.dbody{padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.area{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.stations{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.92rem}
+.slots{display:grid;grid-template-columns:92px 1fr;gap:8px 14px;margin:0}
+.slots dt{font:500 .78rem/1.6 var(--mono);color:var(--accent);text-transform:uppercase}
+.slots dd{margin:0}
+.note{font-size:.9rem;color:var(--muted)}
+@media (max-width:640px){
+  .day{grid-template-columns:1fr}
+  .date{flex-direction:row;align-items:baseline;gap:10px;border-right:0;border-bottom:1px solid var(--rule);padding:12px 16px}
+  .date .dn{font-size:1.8rem}
+  .slots{grid-template-columns:1fr;gap:2px}
+  .slots dd{margin-bottom:8px}
+}
+
+/* sights */
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.cat{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.cat ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.cat li{display:flex;flex-direction:column;gap:2px;padding-bottom:10px;border-bottom:1px dashed var(--rule)}
+.cat li:last-child{border-bottom:0;padding-bottom:0}
+.cat li b{font-weight:600}
+.cat li span{font-size:.9rem;color:var(--muted)}
+
+/* packing */
+.packbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.packbar button{font:600 .85rem var(--body);background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:999px;padding:6px 12px;cursor:pointer}
+.packbar button:hover{border-color:var(--accent);color:var(--accent)}
+.packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.pack{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.pack .ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.count{font:500 .8rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.group{display:flex;flex-direction:column;gap:4px}
+.group .eyebrow{margin-top:4px;margin-bottom:2px}
+.group label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:3px 0;font-size:.95rem}
+.group input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.group input:checked + span{text-decoration:line-through;color:var(--muted)}
+
+/* getting around */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.panel ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
+.sources{font-size:.85rem;color:var(--muted)}
+.sources ul{margin:6px 0 0;padding-left:1.1em;columns:2 280px;column-gap:28px}
+.sources li{break-inside:avoid;margin-bottom:4px}
+
+a.map{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+a.map:hover{color:var(--accent)}
+a.map::after{content:"";display:inline-block;width:.55em;height:.55em;margin-left:.25em;border:2px solid var(--accent);border-radius:50% 50% 50% 0;transform:rotate(-45deg) translateY(-1px);vertical-align:.1em}
+.eats{border-top:1px dashed var(--rule);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.eats ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 18px;font-size:.9rem}
+.eats li{display:flex;flex-direction:column}
+.eats li span{color:var(--muted);font-size:.85rem}
+.booked{display:inline-block;font:700 .66rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--surface);background:var(--accent);padding:3px 6px;border-radius:3px;margin-right:4px;vertical-align:1px}
+.friend{display:inline-block;font:700 .66rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:3px 6px;border-radius:3px;margin-left:2px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Trip plan · 2 adults · 7 nights</span>
+  <h1>London by Tube &amp; Thrift</h1>
+  <p>Sun 27 Sep to Sun 4 Oct 2026. One base in Camden, one neighbourhood per day, charity shops and vintage in every cluster, two or three museums, one proper dinner, one odd little cocktail bar, and Camden right outside the door.</p>
+  <div class="facts">
+    <div class="fact"><span class="eyebrow">Base</span><span><b>Camden (Airbnb)</b>. Northern line both branches, Overground from Camden Road.</span></div>
+    <div class="fact"><span class="eyebrow">Arrival</span><span><b>Sun 11:00, LHR.</b> A bit over an hour by tube to Camden, one change.</span></div>
+    <div class="fact"><span class="eyebrow">Weather (averages)</span><span><b>Highs 16 to 20°C</b> (61 to 68°F), lows 9 to 12°C (48 to 54°F). Rain on roughly 1 day in 3.</span></div>
+    <div class="fact"><span class="eyebrow">Transit</span><span><b>Tap contactless.</b> Zones 1 to 2 caps at £8.90/day per person.</span></div>
+  </div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#base">Base</a><a href="#itinerary">Itinerary</a><a href="#sights">Sights &amp; list</a><a href="#packing">Packing</a><a href="#transit">Getting around</a>
+  </nav>
+</header>
+
+<section id="base">
+  <div class="sechead"><span class="eyebrow">Where you're staying</span><h2>Camden base</h2></div>
+  <p>Camden works well for this trip. The market is on your doorstep, so you can dip in more than once instead of cramming it into one visit, and the Northern line's two branches both pass through Camden Town, putting Soho, Bloomsbury, King's Cross and Old Street on a direct ride. The Overground from Camden Road runs straight to Dalston, which makes the east London charity-shop day easy.</p>
+  <div class="tscroll">
+  <table>
+    <thead><tr><th>Station</th><th>Line</th><th>Use it for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="stn"><i style="--c:#000000"></i>Camden Town</span></td><td>Northern (both branches)</td><td>Main station. Charing Cross branch to Goodge St, Tottenham Court Rd, Leicester Sq. Bank branch to Euston, King's Cross, Angel, Old Street.</td></tr>
+      <tr><td><span class="stn"><i style="--c:#000000"></i>Chalk Farm</span> / <span class="stn"><i style="--c:#000000"></i>Mornington Crescent</span></td><td>Northern</td><td>Quieter alternatives when Camden Town is crowded, which is most likely on weekend afternoons.</td></tr>
+      <tr><td><span class="stn"><i style="--c:#EE7C0E"></i>Camden Road</span></td><td>Overground (Mildmay)</td><td>Direct to Highbury &amp; Islington and Dalston Kingsland.</td></tr>
+      <tr><td><span class="stn"><i style="--c:#003688"></i>King's Cross St Pancras</span></td><td>2 stops on the Northern</td><td>Your change point for the Piccadilly (Heathrow, South Kensington, Holborn) and the Hammersmith &amp; City/Circle (Farringdon, Ladbroke Grove, Liverpool St).</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">Which station is closest depends on where exactly the Airbnb is. Camden Road is about a 10 minute walk east of Camden Town.</p>
+</section>
+
+<section id="itinerary">
+  <div class="sechead"><span class="eyebrow">Day by day</span><h2>One neighbourhood a day</h2></div>
+  <p class="muted">Each day stays in one part of the city so you're walking between shops, not riding between them. Underlined names with a pin open in Google Maps. Stations shown with their line colour; every day starts from Camden with one direct ride or one change.</p>
+
+  <div class="days">
+
+    <article class="day">
+      <div class="date"><span class="dow">Sunday</span><span class="dn">27</span><span class="mo">Sep</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Arrive, settle into Camden</h3><span class="lines">Light day, stay awake till 9pm</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#003688"></i>Heathrow T2/3, 4 or 5</span><span class="stn"><i style="--c:#003688"></i>King's Cross St Pancras</span><span class="stn"><i style="--c:#000000"></i>Camden Town</span></div>
+        <dl class="slots">
+          <dt>11:00</dt><dd>Land. Piccadilly line to King's Cross St Pancras, then Northern line two stops north to Camden Town. Budget a bit over an hour on the trains. Faster option: Elizabeth line to Tottenham Court Road, then the Northern line (Charing Cross branch) north to Camden Town. Both count toward the daily cap.</dd>
+          <dt>~14:00</dt><dd>Airbnb check-in is 4pm; the host will say if you can get in earlier. If not, drop bags with a luggage storage service near Camden Town and take a first, low-stakes wander through <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Camden+Lock+Market%2C+London+NW1+8AF" title="Open in Google Maps">Camden Lock</a> and along the canal. Save the proper market shopping for Tuesday morning, when it's quiet.</dd>
+          <dt>16:00</dt><dd>Check in, shower, regroup.</dd>
+          <dt>Evening</dt><dd>Walk up <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Primrose+Hill+viewpoint%2C+London+NW1" title="Open in Google Maps"><b>Primrose Hill</b></a> around sunset (about 6:50pm) for the skyline, then an easy dinner in Camden or Primrose Hill.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Dishoom+King%27s+Cross%2C+5+Stable+Street%2C+London+N1C+4AB" title="Open in Google Maps"><b>Dishoom King's Cross</b></a><span>Bombay café, 2 stops away. <span class="friend">Friend's pick</span></span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Lemonia%2C+89+Regent%27s+Park+Road%2C+London+NW1+8UY" title="Open in Google Maps"><b>Lemonia</b></a><span>Family-run Greek, a Primrose Hill classic</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Andy%27s+Greek+Taverna%2C+23+Pratt+Street%2C+London+NW1+0BE" title="Open in Google Maps"><b>Andy's Greek Taverna</b></a><span>Camden taverna since the 60s</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Namaaste+Kitchen%2C+64+Parkway%2C+London+NW1+7AH" title="Open in Google Maps"><b>Namaaste Kitchen</b></a><span>Local favourite Indian, family-style biryanis</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Monday</span><span class="dn">28</span><span class="mo">Sep</span></div>
+      <div class="dbody">
+        <div class="area"><h3>King's Cross → Bloomsbury → Covent Garden → Soho</h3><span class="lines">Museum #1 + central vintage</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#003688"></i>King's Cross St Pancras</span><span class="stn"><i style="--c:#000000"></i>Tottenham Court Road</span><span class="stn"><i style="--c:#000000"></i>Leicester Square</span></div>
+        <dl class="slots">
+          <dt>Breakfast</dt><dd>Northern line two stops to King's Cross for breakfast at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Dishoom+King%27s+Cross%2C+5+Stable+Street%2C+London+N1C+4AB" title="Open in Google Maps"><b>Dishoom King's Cross</b></a> (your friend's pick; the bacon naan roll is the move).</dd>
+          <dt>Morning</dt><dd>Next door at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Coal+Drops+Yard%2C+London+N1C+4AB" title="Open in Google Maps"><b>Coal Drops Yard</b></a>, browse <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Boutique+by+Shelter%2C+Coal+Drops+Yard%2C+London+N1C+4AB" title="Open in Google Maps"><b>Boutique by Shelter</b></a> (Unit EV8), a curated charity boutique. Then walk south through Bloomsbury (about 20 minutes), stopping at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=67+Marchmont+Street%2C+London+WC1N+1AP" title="Open in Google Maps"><b>Silk Road Charity Bazaar</b></a> (67 Marchmont St) for Central Asian textiles and crafts, on to the <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=British+Museum%2C+Great+Russell+Street%2C+London+WC1B+3DG" title="Open in Google Maps"><b>British Museum</b></a> (free). Pick two or three galleries rather than trying to see it all.</dd>
+          <dt>Afternoon</dt><dd>Walk south to Covent Garden: <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Rokit%2C+42+Shelton+Street%2C+London+WC2H+9HZ" title="Open in Google Maps"><b>Rokit</b></a> (42 Shelton St) for costume-y accessories, cowboy boots, military gear. Then Soho: <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Reign+Vintage%2C+12+Berwick+Street%2C+London+W1F+0PN" title="Open in Google Maps"><b>Reign Vintage</b></a> (12 Berwick St) and a wander down Berwick Street. Coffee at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Monmouth+Coffee%2C+27+Monmouth+Street%2C+London+WC2H+9EU" title="Open in Google Maps"><b>Monmouth</b></a> on Monmouth Street.</dd>
+          <dt>Evening</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bocca+di+Lupo%2C+12+Archer+Street%2C+London+W1D+7BB" title="Open in Google Maps"><b>Bocca di Lupo</b></a> (Soho) for Italian small plates; half portions keep it reasonable. Northern line home direct from Leicester Square.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Kiln%2C+58+Brewer+Street%2C+London+W1F+9TL" title="Open in Google Maps"><b>Kiln</b></a><span>Bib Gourmand regional Thai, walk-in counter</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Berenjak%2C+27+Romilly+Street%2C+London+W1D+5AL" title="Open in Google Maps"><b>Berenjak</b></a><span>Bib Gourmand Iranian grill</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Hoppers%2C+49+Frith+Street%2C+London+W1D+4SG" title="Open in Google Maps"><b>Hoppers Soho</b></a><span>Bib Gourmand Sri Lankan</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=The+Barbary%2C+16+Neal%27s+Yard%2C+London+WC2H+9DP" title="Open in Google Maps"><b>The Barbary</b></a><span>Bib Gourmand North African counter, Covent Garden</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=The+French+House%2C+49+Dean+Street%2C+London+W1D+5BG" title="Open in Google Maps"><b>The French House</b></a><span>Old Soho pub, drinks by the half pint</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bar+Lina%2C+Soho%2C+London" title="Open in Google Maps"><b>Bar Lina</b></a><span>Italian cocktail bar hidden beneath a deli</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Tuesday</span><span class="dn">29</span><span class="mo">Sep</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Camden Market → London Zoo → Regent's Park</h3><span class="lines">Your Camden day, all on foot</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#000000"></i>On foot from the Airbnb</span><span class="stn"><i style="--c:#000000"></i>Camden Town</span></div>
+        <dl class="slots">
+          <dt>10:00</dt><dd>Camden Market opens 10am and weekday mornings are the calmest. Start at the <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Stables+Market%2C+Chalk+Farm+Road%2C+London+NW1+8AH" title="Open in Google Maps"><b>Stables Market</b></a>, where most of the vintage clothing, antiques and records are, then Camden Lock and the High Street shops (Rokit has a Camden branch too). Early lunch from the market food stalls.</dd>
+          <dt>13:00</dt><dd>Walk about 15 to 20 minutes along the canal or Parkway to <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=ZSL+London+Zoo%2C+Outer+Circle%2C+Regent%27s+Park%2C+London+NW1+4RY" title="Open in Google Maps"><b>ZSL London Zoo</b></a> on the north edge of Regent's Park. Open 10am to 5pm this time of year, last entry 4pm. Adult tickets run about £28 to £35 online, cheaper if bought before 10am on the day, so buy on your phone over breakfast.</dd>
+          <dt>17:00</dt><dd>If there's light left, walk south through <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Regent%27s+Park%2C+London" title="Open in Google Maps"><b>Regent's Park</b></a> for <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Frieze+Sculpture%2C+English+Gardens%2C+Regent%27s+Park%2C+London" title="Open in Google Maps"><b>Frieze Sculpture</b></a> (free, outdoor, runs to 1 Nov). Sunset is around 6:45pm.</dd>
+          <dt>Evening</dt><dd>Back to Camden or Primrose Hill for dinner (see the list below).</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Buk%2C+Hawley+Wharf%2C+London+NW1+8TT" title="Open in Google Maps"><b>Buk</b></a><span>Smashburgers at Hawley Wharf, by the market</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Camden+Market%2C+London+NW1+8AF" title="Open in Google Maps"><b>Camden Market food stalls</b></a><span>Lunch grazing in the market</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Caravan+King%27s+Cross%2C+1+Granary+Square%2C+London+N1C+4AA" title="Open in Google Maps"><b>Caravan King's Cross</b></a><span>Granary Square, all-day brunch</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Dishoom+King%27s+Cross%2C+5+Stable+Street%2C+London+N1C+4AB" title="Open in Google Maps"><b>Dishoom King's Cross</b></a><span>Breakfast Monday, or any evening, 2 stops away. <span class="friend">Friend's pick</span></span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Hokus+Pokus+bar%2C+King%27s+Cross%2C+London" title="Open in Google Maps"><b>Hokus Pokus</b></a><span>Apothecary-themed cocktail bar, King's Cross</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Wednesday</span><span class="dn">30</span><span class="mo">Sep</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Dalston &amp; Stoke Newington</h3><span class="lines">The quirkiest charity-shop day</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#EE7C0E"></i>Camden Road</span><span class="stn"><i style="--c:#EE7C0E"></i>Dalston Kingsland</span></div>
+        <dl class="slots">
+          <dt>Getting there</dt><dd>Overground (Mildmay line) direct from Camden Road to Dalston Kingsland. No change needed.</dd>
+          <dt>Breakfast</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Allpress+Espresso+Dalston%2C+55+Dalston+Lane%2C+London+E8+2NG" title="Open in Google Maps">Allpress Espresso</a> in Dalston.</dd>
+          <dt>Day</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Beyond+Retro%2C+92-100+Stoke+Newington+Road%2C+London+N16+7XB" title="Open in Google Maps"><b>Beyond Retro Dalston</b></a> (92-100 Stoke Newington Rd), a huge but well-edited warehouse under an Art Deco roof, with a café. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Oxfam%2C+514-518+Kingsland+Road%2C+London+E8+4AR" title="Open in Google Maps"><b>Oxfam Dalston</b></a> (514-518 Kingsland Rd), known for quirky, fast-turning stock. Then bus north up Stoke Newington Road (73 or 76) to Stoke Newington for <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Reign+Vintage+Stoke+Newington%2C+London" title="Open in Google Maps"><b>Reign Vintage</b></a>'s second branch and the independent shops on Church Street.</dd>
+          <dt>Evening</dt><dd>Dinner at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Oren+restaurant%2C+Dalston%2C+London" title="Open in Google Maps"><b>Oren</b></a> (Dalston), bold Middle Eastern plates. Optional nightcap at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Satan%27s+Whiskers%2C+343+Cambridge+Heath+Road%2C+London+E2+9RA" title="Open in Google Maps"><b>Satan's Whiskers</b></a> near Bethnal Green (see the list below). Overground back to Camden Road from Dalston Kingsland.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Oren+restaurant%2C+Dalston%2C+London" title="Open in Google Maps"><b>Oren</b></a><span>Bib Gourmand Eastern Mediterranean, the dinner pick</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Calong+restaurant%2C+Stoke+Newington%2C+London" title="Open in Google Maps"><b>Cálong</b></a><span>Bib Gourmand Korean, Stoke Newington</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Three+Sheets+bar%2C+Dalston%2C+London" title="Open in Google Maps"><b>Three Sheets</b></a><span>Brother-run cocktail bar, Dalston</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Satan%27s+Whiskers%2C+343+Cambridge+Heath+Road%2C+London+E2+9RA" title="Open in Google Maps"><b>Satan's Whiskers</b></a><span>Taxidermy, 90s hip-hop, walk-ins welcome</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Thursday</span><span class="dn">1</span><span class="mo">Oct</span></div>
+      <div class="dbody">
+        <div class="area"><h3>South Kensington, Chelsea &amp; Knightsbridge, dinner in Fitzrovia</h3><span class="lines">Museum #2 + designer charity shops + Harrods + the nice meal</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#003688"></i>South Kensington</span><span class="stn"><i style="--c:#FFD300"></i>Sloane Square</span><span class="stn"><i style="--c:#003688"></i>Knightsbridge</span><span class="stn"><i style="--c:#0098D4"></i>Oxford Circus</span></div>
+        <dl class="slots">
+          <dt>Morning</dt><dd>Northern line to Leicester Square or King's Cross, then Piccadilly line to South Kensington. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Victoria+and+Albert+Museum%2C+Cromwell+Road%2C+London+SW7+2RL" title="Open in Google Maps"><b>V&amp;A</b></a> (free, opens 10:00): the Fashion gallery plus the new free show <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Victoria+and+Albert+Museum%2C+Cromwell+Road%2C+London+SW7+2RL" title="Open in Google Maps"><b>The Burberry Trench: Crafting an Icon</b></a> (from 21 Sep). Coffee and a pastry in the V&amp;A café.</dd>
+          <dt>Afternoon</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Octavia+Foundation+charity+shop%2C+3+Bute+Street%2C+London+SW7+3EY" title="Open in Google Maps"><b>Octavia Foundation</b></a> (3 Bute St, steps from the station) for high-end donated labels. Walk or bus down to Chelsea: <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=British+Red+Cross+shop%2C+69-71+Old+Church+Street%2C+London+SW3+5BS" title="Open in Google Maps"><b>British Red Cross</b></a> (69-71 Old Church St, big and well known for designer finds), then work along the <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=King%27s+Road%2C+Chelsea%2C+London" title="Open in Google Maps"><b>King's Road</b></a>, which has a run of charity shops.</dd>
+          <dt>~16:00</dt><dd>Walk up Sloane Street to <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Harrods%2C+87-135+Brompton+Road%2C+London+SW1X+7XL" title="Open in Google Maps"><b>Harrods</b></a> (87-135 Brompton Rd; Mon to Sat 10am to 9pm) for gifts, aiming to arrive by about 4pm. The Food Halls are the easy win: tea and biscuits, the Chocolate Hall, and the Roastery &amp; Bake Hall, all in packaging that travels well. Doing Harrods last means you only carry the bags as far as dinner. Leave by 5:30pm to make the 6pm booking. Note that the UK no longer offers VAT refunds to tourists, so the price on the tag is what you pay.</dd>
+          <dt>18:00</dt><dd><b class="booked">Booked</b> <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Chishuru%2C+3+Great+Titchfield+Street%2C+London+W1W+8AX" title="Open in Google Maps"><b>Chishuru</b></a> (3 Great Titchfield St, Fitzrovia), table at 6pm. From Knightsbridge, Piccadilly line to Green Park, then Victoria line one stop to Oxford Circus, about 20 minutes door to door. One Michelin star, modern West African cooking from chef Joké Bakare, drawing on Yoruba, Igbo and Hausa food. Michelin singles out the banga fish stew with turbot. Home: walk about 10 minutes to Goodge Street for the Northern line direct to Camden.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Victoria+and+Albert+Museum+cafe%2C+Cromwell+Road%2C+London+SW7+2RL" title="Open in Google Maps"><b>V&amp;A Café</b></a><span>Coffee or lunch under the Victorian ceilings</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Elystan+Street%2C+43+Elystan+Street%2C+London+SW3+3NT" title="Open in Google Maps"><b>Elystan Street</b></a><span>Starred Chelsea lunch, set menu from £45</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pahli+Hill%2C+79-81+Mortimer+Street%2C+London+W1W+7SJ" title="Open in Google Maps"><b>Pahli Hill</b></a><span>Bombay-inspired Indian near Chishuru, basement bar</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bar+Kinky%2C+Fitzrovia%2C+London" title="Open in Google Maps"><b>Bar Kinky</b></a><span>Inventive cocktails beneath a dumpling restaurant</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Reverend+J+W+Simpson%2C+32+Goodge+Street%2C+London+W1T+2QJ" title="Open in Google Maps"><b>Reverend J W Simpson</b></a><span>Subterranean bar with original wallpaper, kooky cocktails</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Friday</span><span class="dn">2</span><span class="mo">Oct</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Holborn → Spitalfields → Brick Lane → Shoreditch</h3><span class="lines">Museum #3 (small) + east-end vintage + fondue + cocktails</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#E32017"></i>Holborn</span><span class="stn"><i style="--c:#E32017"></i>Liverpool Street</span><span class="stn"><i style="--c:#000000"></i>Old Street</span></div>
+        <dl class="slots">
+          <dt>Getting there</dt><dd>Northern line to Tottenham Court Road, then Central line one stop to Holborn.</dd>
+          <dt>Breakfast</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Prufrock+Coffee%2C+23-25+Leather+Lane%2C+London+EC1N+7TE" title="Open in Google Maps">Prufrock Coffee</a> on Leather Lane, a short walk from Holborn.</dd>
+          <dt>10:00</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Sir+John+Soane%27s+Museum%2C+13+Lincoln%27s+Inn+Fields%2C+London+WC2A+3BP" title="Open in Google Maps"><b>Sir John Soane's Museum</b></a> (13 Lincoln's Inn Fields), free, walk-in, Wed to Sun only. An architect's house crammed with antiquities, mirrors and hidden panels. An hour is plenty and it's the quirkiest museum in London.</dd>
+          <dt>Afternoon</dt><dd>Central line Holborn → Liverpool Street. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Atika%2C+55-59+Hanbury+Street%2C+London+E1+5JP" title="Open in Google Maps"><b>Atika</b></a> (55-59 Hanbury St), a multi-floor vintage department store in an old furniture factory. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Old+Spitalfields+Market%2C+London+E1+6EW" title="Open in Google Maps"><b>Old Spitalfields Market</b></a>, then Brick Lane's vintage shops and <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=House+of+Vintage%2C+4+Cheshire+Street%2C+London+E2+6EH" title="Open in Google Maps"><b>House of Vintage</b></a> (4 Cheshire St) for rare one-offs from 1920s gowns to 70s shirts. Lunch at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Smoking+Goat%2C+64+Shoreditch+High+Street%2C+London+E1+6JJ" title="Open in Google Maps"><b>Smoking Goat</b></a> (64 Shoreditch High St), a Thai grill your friend recommended, or a salt beef bagel at <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Beigel+Bake%2C+159+Brick+Lane%2C+London+E1+6SB" title="Open in Google Maps">Beigel Bake</a> if you're hungry.</dd>
+          <dt>Dinner</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bistrot+Walluc%2C+40+Redchurch+Street%2C+London+E2+7DP" title="Open in Google Maps"><b>Bistrot Walluc</b></a> (40 Redchurch St, Mon to Sat from 6pm): a tiny fondue bistro that feels like a living room full of kitsch and vintage objects, sometimes with live music or card tricks. The cheese fondue set menu comes with bread, potatoes, salad and cheese or charcuterie (advertised at £24). Only about 30 covers, so book, and call a day ahead to confirm. Shoreditch High Street station is a few minutes away.</dd>
+          <dt>Late</dt><dd><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Callooh+Callay%2C+65+Rivington+Street%2C+London+EC2A+3AY" title="Open in Google Maps"><b>Callooh Callay</b></a> (65 Rivington St, about a 10 minute walk): the cocktail bar pick. Old Street station is a short walk, and the Northern line (Bank branch) runs direct back to Camden Town.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Smoking+Goat%2C+64+Shoreditch+High+Street%2C+London+E1+6JJ" title="Open in Google Maps"><b>Smoking Goat</b></a><span>Thai bar and grill, open from noon. <span class="friend">Friend's pick</span></span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Gunpowder%2C+11+White%27s+Row%2C+London+E1+7NF" title="Open in Google Maps"><b>Gunpowder Spitalfields</b></a><span>Bib Gourmand Indian small plates</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=St+John+Bread+and+Wine%2C+94-96+Commercial+Street%2C+London+E1+6LZ" title="Open in Google Maps"><b>St John Bread and Wine</b></a><span>Bib Gourmand, nose-to-tail British</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Singburi%2C+Shoreditch%2C+London" title="Open in Google Maps"><b>Singburi</b></a><span>Bib Gourmand Thai, new for 2026</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Tayer+%2B+Elementary%2C+152+Old+Street%2C+London+EC1V+9BW" title="Open in Google Maps"><b>Tayēr + Elementary</b></a><span>World-class cocktails, casual front bar</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Nightjar%2C+129+City+Road%2C+London+EC1V+1JB" title="Open in Google Maps"><b>Nightjar</b></a><span>Candlelit speakeasy with live jazz</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Saturday</span><span class="dn">3</span><span class="mo">Oct</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Notting Hill &amp; Portobello Road</h3><span class="lines">Saturday is the big market day, go early</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#F3A9BB"></i>Ladbroke Grove</span><span class="stn"><i style="--c:#E32017"></i>Notting Hill Gate</span></div>
+        <dl class="slots">
+          <dt>9:00</dt><dd>Northern line to King's Cross, then Hammersmith &amp; City line direct to Ladbroke Grove. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portobello+Green+Market%2C+281+Portobello+Road%2C+London+W10+5TZ" title="Open in Google Maps"><b>Portobello Green Market</b></a> under the Westway (Fri to Sun, 9 to 5) is the vintage fashion and designer section; Saturday mixes fashion, vintage and collectibles.</dd>
+          <dt>Late morning</dt><dd>Walk south down Portobello Road through the antiques stalls. <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=British+Red+Cross+shop%2C+164+Portobello+Road%2C+London+W11+2EB" title="Open in Google Maps"><b>British Red Cross Portobello</b></a> (164 Portobello Rd) for designer-leaning donations. Detour north to <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Golborne+Road%2C+London+W10" title="Open in Google Maps">Golborne Road</a> for more stalls and bric-a-brac.</dd>
+          <dt>Afternoon</dt><dd>Exit via Notting Hill Gate and walk into <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Kensington+Gardens%2C+London" title="Open in Google Maps"><b>Kensington Gardens</b></a> and Hyde Park. Central line from Notting Hill Gate to Tottenham Court Road, then Northern line home.</dd>
+          <dt>Evening</dt><dd>Last night close to home: a second, evening pass through Camden (Saturday the market stays open until 7pm), or back to Soho for something casual (Quality Wines, The French House). <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Satan%27s+Whiskers%2C+343+Cambridge+Heath+Road%2C+London+E2+9RA" title="Open in Google Maps"><b>Satan's Whiskers</b></a> if you skipped it Wednesday.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Canteen%2C+310+Portobello+Road%2C+London" title="Open in Google Maps"><b>Canteen</b></a><span>Bib Gourmand Italian, good for lunch</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Saporitalia%2C+222+Portobello+Road%2C+London" title="Open in Google Maps"><b>Saporitalia</b></a><span>Family-run Italian, classic pasta</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Jay+Dees+Catering%2C+28+Lancaster+Road%2C+London+W11" title="Open in Google Maps"><b>Jay Dees</b></a><span>Jerk chicken takeaway, great value</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=The+Pelican%2C+Portobello%2C+London+W11" title="Open in Google Maps"><b>The Pelican W11</b></a><span>Bib Gourmand pub dining</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Maramia+Cafe%2C+48+Golborne+Road%2C+London+W10" title="Open in Google Maps"><b>Maramia Cafe</b></a><span>Palestinian, lively later in the evening</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="day">
+      <div class="date"><span class="dow">Sunday</span><span class="dn">4</span><span class="mo">Oct</span></div>
+      <div class="dbody">
+        <div class="area"><h3>Depart</h3><span class="lines">Only if your flight is afternoon or later</span></div>
+        <div class="stations"><span class="stn"><i style="--c:#000000"></i>Camden Town</span><span class="stn"><i style="--c:#6950A1"></i>Tottenham Court Road</span><span class="stn"><i style="--c:#003688"></i>King's Cross St Pancras</span></div>
+        <dl class="slots">
+          <dt>Morning</dt><dd>A last coffee and one more lap of the <a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Stables+Market%2C+Chalk+Farm+Road%2C+London+NW1+8AH" title="Open in Google Maps">Stables Market</a> (it opens at 10am). Check the Airbnb checkout time and whether the host allows a late bag pickup.</dd>
+          <dt>Airport</dt><dd>With luggage, the easiest route is Northern line to Tottenham Court Road, then the Elizabeth line to Heathrow, or change at King's Cross for the Piccadilly line. Allow roughly an hour or more, and aim to be at the airport 3 hours before an international departure.</dd>
+        </dl>
+        <div class="eats"><span class="eyebrow">Eat &amp; drink nearby</span>
+          <ul>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Greenberry+Cafe%2C+101+Regent%27s+Park+Road%2C+London+NW1+8UR" title="Open in Google Maps"><b>Greenberry Cafe</b></a><span>All-day brunch in Primrose Hill</span></li>
+            <li><a class="map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Camden+Market%2C+London+NW1+8AF" title="Open in Google Maps"><b>Camden Market food stalls</b></a><span>One last lap before the airport</span></li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="sights">
+  <div class="sechead"><span class="eyebrow">The full list</span><h2>Sights, shops, food &amp; drink</h2></div>
+  <p class="muted">Everything in the itinerary plus swaps if a day changes. Opening days are as listed by the venues or guides at time of writing; worth a quick check the morning of.</p>
+  <div class="cats">
+    <div class="cat"><h3>Charity &amp; vintage</h3><ul>
+      <li><b>Beyond Retro, Dalston</b><span>Huge, well-edited, Art Deco warehouse. Dalston Kingsland.</span></li>
+      <li><b>Oxfam Dalston</b><span>Quirky stock, new items daily. Dalston Junction.</span></li>
+      <li><b>Stables Market, Camden</b><span>Most of Camden's vintage clothing and records. Camden Town.</span></li>
+      <li><b>Atika, Spitalfields</b><span>Vintage department store over several floors. Liverpool Street.</span></li>
+      <li><b>House of Vintage, Brick Lane</b><span>Rare one-offs, 1920s to 70s. Bethnal Green / Shoreditch High St.</span></li>
+      <li><b>Rokit, Covent Garden</b><span>Accessories, boots, costume-worthy pieces. Covent Garden.</span></li>
+      <li><b>Reign Vintage, Soho</b><span>European-sourced stock. Tottenham Court Road.</span></li>
+      <li><b>Portobello Green Market</b><span>Vintage and designers, Fri to Sun. Ladbroke Grove.</span></li>
+      <li><b>British Red Cross, Chelsea &amp; Portobello</b><span>Designer donations from wealthy postcodes.</span></li>
+      <li><b>Boutique by Shelter, Coal Drops Yard</b><span>Curated charity boutique at the end of the canal walk.</span></li>
+      <li><b>Retromania, Pimlico</b><span>Charity-run (FARA), eclectic vintage and memorabilia. Victoria. Swap-in option.</span></li>
+      <li><b>Lama's Pyjamas, Roman Road</b><span>Quirky mixed vintage. Bethnal Green. Swap-in option.</span></li>
+      <li><b>Paper Dress Vintage, Hackney</b><span>1900s to 80s, doubles as an events venue. Hackney Central. Swap-in option.</span></li>
+    </ul></div>
+    <div class="cat"><h3>Museums &amp; the zoo</h3><ul>
+      <li><b>V&amp;A South Kensington</b><span>Free. Fashion gallery; Burberry Trench show from 21 Sep.</span></li>
+      <li><b>British Museum</b><span>Free. Monday in the plan.</span></li>
+      <li><b>ZSL London Zoo</b><span>Regent's Park, walkable from Camden. 10am to 5pm (last entry 4pm); adults roughly £28 to £35 online. Tuesday in the plan.</span></li>
+      <li><b>Sir John Soane's Museum</b><span>Free, Wed to Sun 10 to 5, walk-in. The quirky one.</span></li>
+    </ul>
+    <h3>Shopping for gifts</h3><ul>
+      <li><b>Harrods Food Halls</b><span>Knightsbridge. Tea, biscuits, chocolate, hampers. Mon to Sat 10 to 9, Sun 11:30 to 6. Thursday in the plan.</span></li>
+    </ul>
+    <h3>Free things outdoors</h3><ul>
+      <li><b>Frieze Sculpture, Regent's Park</b><span>Free, 16 Sep to 1 Nov.</span></li>
+      <li><b>Regent's Canal towpath</b><span>Camden Lock to King's Cross on foot (about 30 min), any spare afternoon.</span></li>
+      <li><b>Primrose Hill</b><span>Skyline view, a short walk from Camden.</span></li>
+      <li><b>Lady in Blue, Fourth Plinth</b><span>New Trafalgar Square commission, from 10 Sep.</span></li>
+    </ul></div>
+    <div class="cat"><h3>The nice meal</h3><ul>
+      <li><b>Chishuru</b> <span>Fitzrovia. One Michelin star, modern West African. Booked: Thursday 6pm.</span></li>
+      <li><b>Paradise</b><span>Soho. Bib Gourmand, modern Sri Lankan tasting menu (last reported at £65pp; check current price). Dinner Tue to Sat. Backup for another night.</span></li>
+      <li><b>Kitchen Theory</b><span>Holborn. Multisensory "gastrophysics" chef's table: 8 courses with projection, aroma and sound. Not Michelin starred. Late Sept and 1 Oct dates show sold out, so ask about cancellations.</span></li>
+      <li><b>Bistrot Walluc</b><span>Shoreditch. Kitschy fondue bistro, set menu advertised at £24. Friday dinner in the plan.</span></li>
+      <li><b>The White Haus</b><span>Farringdon (17 Farringdon St). Three-floor ski-lodge pub with fondue, raclette and tartiflette. Fondue backup.</span></li>
+      <li><b>Josette</b><span>Clerkenwell. French-Alpine bistro known for all-you-can-eat raclette. Raclette backup.</span></li>
+      <li><b>Six by Nico</b><span>Fitzrovia. Playful 6-course themed tasting menu (themes run through 4 Oct are Circus and New York). Not molecular, but fun and fairly priced. Backup.</span></li>
+      <li><b>Bocca di Lupo</b><span>Soho. Italian, half portions. Monday dinner in the plan.</span></li>
+      <li><b>Oren</b><span>Dalston. Middle Eastern. Wednesday dinner in the plan.</span></li>
+    </ul>
+    <h3>Cocktails, novel not fancy</h3><ul>
+      <li><b>Callooh Callay</b> <span>Shoreditch. Jabberwocky theme, hidden back bar, menus as cassettes and comics. Opens 6pm. The pick.</span></li>
+      <li><b>Satan's Whiskers</b><span>Bethnal Green. Taxidermy, 90s hip-hop, daily-changing menu, ££. Walk-ins welcome.</span></li>
+      <li><b>Evans &amp; Peel Detective Agency</b><span>Earls Court. Secret-door 1920s speakeasy.</span></li>
+    </ul>
+    <h3>Friends' picks</h3><ul>
+      <li><b>Smoking Goat</b><span>Shoreditch. Thai bar and grill, 64 Shoreditch High St. Friday lunch in the plan.</span></li>
+      <li><b>Dishoom King's Cross</b><span>Bombay café by Coal Drops Yard. Monday breakfast in the plan.</span></li>
+    </ul>
+    <h3>Easy breakfast &amp; coffee</h3><ul>
+      <li><b>Dishoom King's Cross</b><span>Bacon naan roll; 2 stops from Camden.</span></li>
+      <li><b>Caravan King's Cross</b><span>Granary Square, all-day brunch.</span></li>
+      <li><b>Monmouth Coffee</b><span>Covent Garden.</span></li>
+      <li><b>Prufrock Coffee</b><span>Leather Lane, near Holborn/Farringdon.</span></li>
+      <li><b>Allpress Espresso</b><span>Dalston.</span></li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="packing">
+  <div class="sechead"><span class="eyebrow">Packing</span><h2>Two lists, layered for 9 to 20°C and showers</h2></div>
+  <div class="packbar">
+    <p class="muted">Pack for about six days and plan one laundry run or rewear. Leave a third of your bag empty for charity-shop finds. Ticks save in this browser only.</p>
+    <button type="button" id="resetPack">Clear ticks</button>
+  </div>
+  <div class="packs">
+    <div class="pack" data-list="him">
+      <div class="ph"><h3>Him</h3><span class="count" data-count></span></div>
+      <div class="group"><span class="eyebrow">Clothes</span>
+        <label><input type="checkbox"><span>Packable waterproof jacket with a hood</span></label>
+        <label><input type="checkbox"><span>1 warm mid-layer (merino sweater or light fleece)</span></label>
+        <label><input type="checkbox"><span>1 smarter layer for dinner (overshirt, blazer or knit)</span></label>
+        <label><input type="checkbox"><span>5 to 6 T-shirts or base tops</span></label>
+        <label><input type="checkbox"><span>2 button-up shirts (one for the nice dinner)</span></label>
+        <label><input type="checkbox"><span>2 pairs trousers or jeans, 1 pair chinos</span></label>
+        <label><input type="checkbox"><span>7 pairs socks, 7 underwear</span></label>
+        <label><input type="checkbox"><span>Sleepwear</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Shoes</span>
+        <label><input type="checkbox"><span>Broken-in walking shoes that handle wet pavements</span></label>
+        <label><input type="checkbox"><span>Second pair for evenings (leather sneakers or boots)</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Carry &amp; tech</span>
+        <label><input type="checkbox"><span>Passport (the one your ETA is linked to)</span></label>
+        <label><input type="checkbox"><span>Contactless card or phone wallet for the tube (his own, not shared)</span></label>
+        <label><input type="checkbox"><span>UK plug adapter (Type G)</span></label>
+        <label><input type="checkbox"><span>Phone charger + small power bank</span></label>
+        <label><input type="checkbox"><span>Compact umbrella</span></label>
+        <label><input type="checkbox"><span>Crossbody bag or daypack</span></label>
+        <label><input type="checkbox"><span>Folding tote for shop hauls</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Toiletries</span>
+        <label><input type="checkbox"><span>Razor, toothbrush, deodorant (liquids under 100ml in carry-on)</span></label>
+        <label><input type="checkbox"><span>Lip balm, any medication in original packaging</span></label>
+        <label><input type="checkbox"><span>Shampoo and body wash if the Airbnb listing doesn't mention them</span></label>
+      </div>
+    </div>
+
+    <div class="pack" data-list="her">
+      <div class="ph"><h3>Her</h3><span class="count" data-count></span></div>
+      <div class="group"><span class="eyebrow">Clothes</span>
+        <label><input type="checkbox"><span>Packable waterproof jacket or trench with a hood</span></label>
+        <label><input type="checkbox"><span>1 to 2 warm mid-layers (cardigan, knit, light fleece)</span></label>
+        <label><input type="checkbox"><span>1 dinner outfit (dress or smart top) for the nice dinner</span></label>
+        <label><input type="checkbox"><span>5 to 6 tops that layer</span></label>
+        <label><input type="checkbox"><span>2 pairs trousers or jeans, 1 skirt or dress for daytime</span></label>
+        <label><input type="checkbox"><span>Tights or leggings for cooler evenings</span></label>
+        <label><input type="checkbox"><span>Scarf (warmth plus instant outfit change)</span></label>
+        <label><input type="checkbox"><span>7 pairs socks, 7 underwear, bras</span></label>
+        <label><input type="checkbox"><span>Sleepwear</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Shoes</span>
+        <label><input type="checkbox"><span>Broken-in walking shoes or boots that handle rain</span></label>
+        <label><input type="checkbox"><span>Second pair for evenings (ankle boots or flats)</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Carry &amp; tech</span>
+        <label><input type="checkbox"><span>Passport (the one your ETA is linked to)</span></label>
+        <label><input type="checkbox"><span>Contactless card or phone wallet for the tube (her own, not shared)</span></label>
+        <label><input type="checkbox"><span>UK plug adapter (Type G)</span></label>
+        <label><input type="checkbox"><span>Phone charger</span></label>
+        <label><input type="checkbox"><span>Crossbody bag that zips (busy markets)</span></label>
+        <label><input type="checkbox"><span>Foldable duffel for the flight home, for thrift finds</span></label>
+      </div>
+      <div class="group"><span class="eyebrow">Toiletries</span>
+        <label><input type="checkbox"><span>Skincare and makeup (liquids under 100ml in carry-on)</span></label>
+        <label><input type="checkbox"><span>Hair tools only if dual-voltage (UK is 230V); check whether the Airbnb has a hairdryer</span></label>
+        <label><input type="checkbox"><span>Moisturiser and lip balm (planes and wind)</span></label>
+        <label><input type="checkbox"><span>Any medication in original packaging</span></label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="transit">
+  <div class="sechead"><span class="eyebrow">Getting around</span><h2>Tube, Overground &amp; bus</h2></div>
+  <div class="two">
+    <div class="panel"><h3>Paying</h3><ul>
+      <li>Tap in and out with a contactless card or phone. Each person needs their own card or device.</li>
+      <li>Always use the same card or device all day so the daily cap applies.</li>
+      <li>Zones 1 to 2: £3.60 peak, £3.10 off-peak per ride, capped at £8.90/day; weekly cap (Mon to Sun) £44.70.</li>
+      <li>Buses: £1.75 per ride, £5.25 daily cap. Tap in only.</li>
+      <li>Heathrow on the Piccadilly or Elizabeth line counts toward the cap. Heathrow Express does not.</li>
+    </ul></div>
+    <div class="panel"><h3>From Camden</h3><ul>
+      <li><span class="stn"><i style="--c:#000000"></i>Northern, Charing Cross branch</span>: Goodge St, Tottenham Court Rd (change for Central and Elizabeth), Leicester Sq (change for Piccadilly)</li>
+      <li><span class="stn"><i style="--c:#000000"></i>Northern, Bank branch</span>: Euston, King's Cross, Angel, Old Street</li>
+      <li><span class="stn"><i style="--c:#EE7C0E"></i>Overground from Camden Road</span>: Highbury &amp; Islington, Dalston Kingsland</li>
+      <li>At <span class="stn"><i style="--c:#003688"></i>King's Cross</span>: Piccadilly (Heathrow, South Ken, Holborn); Hammersmith &amp; City and Circle (Farringdon, Liverpool St, Ladbroke Grove)</li>
+      <li>Northern line trains alternate between branches, so check the destination on the platform board before boarding.</li>
+      <li>No tube strikes were scheduled for these dates when this was written. Check TfL on the day.</li>
+      <li>Sunset is around 6:30 to 6:50pm this week, so plan outdoor things earlier in the day.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="sources" aria-label="Sources">
+  <div class="sechead"><span class="eyebrow">Sources</span></div>
+  <p>Nothing from Google Maps history was used; that account isn't connected to this session.</p>
+  <ul>
+    <li><a href="https://www.timeout.com/london/shopping/londons-nine-best-thrift-stores">Time Out, best thrift stores</a></li>
+    <li><a href="https://www.londonxlondon.com/charity-shops-london/">London x London, charity shops</a></li>
+    <li><a href="https://thriftylondoner.com/the-best-charity-shop-crawls-in-london/">Thrifty Londoner, charity shop crawls</a></li>
+    <li><a href="https://www.portobellofashionmarket.com/">Portobello Green Market</a></li>
+    <li><a href="https://visitcamdentown.com/camden-market-opening-times/">Camden Market opening times</a></li>
+    <li><a href="https://londonist.com/london/museums-and-galleries/the-top-exhibitions-to-see-in-london-september-2026">Londonist, exhibitions Sept 2026</a></li>
+    <li><a href="https://www.soane.org/your-visit">Sir John Soane's Museum, visit</a></li>
+    <li><a href="https://guide.michelin.com/gb/en/greater-london/london/restaurant/chishuru">Michelin Guide, Chishuru</a></li>
+    <li><a href="https://www.timeout.com/london/news/the-cheapest-michelin-starred-restaurants-in-london-in-2026-021226">Time Out, cheapest starred restaurants 2026</a></li>
+    <li><a href="https://www.harrods.com/en-us/c/departments/harrods-food-halls">Harrods Food Halls</a></li>
+    <li><a href="https://guide.michelin.com/gb/en/greater-london/london/restaurant/paradise">Michelin Guide, Paradise</a></li>
+    <li><a href="https://www.paradisesoho.com/">Paradise Soho</a></li>
+    <li><a href="https://saltyplums.co.uk/review-again-paradise-soho/">Salty Plums, Paradise review</a></li>
+    <li><a href="https://thenudge.com/bib-gourmands-in-london/">The Nudge, London Bib Gourmands 2026</a></li>
+    <li><a href="https://kitchen-theory.com/book-experience/">Kitchen Theory, bookings</a></li>
+    <li><a href="https://www.sixbynico.co.uk/london/">Six by Nico London</a></li>
+    <li><a href="https://anguscolwell.substack.com/p/my-top-50-london-restaurants-2026">Top 50 London restaurants, 2026</a></li>
+    <li><a href="https://www.tripadvisor.co.uk/Restaurant_Review-g186338-d2009354-Reviews-Bistrot_Walluc-London_England.html">Tripadvisor, Bistrot Walluc</a></li>
+    <li><a href="https://www.londonxlondon.com/swiss-restaurants-in-london/">London x London, Swiss restaurants</a></li>
+    <li><a href="https://www.londonzoo.org/plan-your-visit/opening-times">London Zoo, opening times</a></li>
+    <li><a href="https://www.londonzoo.org/plan-your-visit/london-zoo-tickets">London Zoo, tickets</a></li>
+    <li><a href="https://londonist.com/london/food-and-drink/food-review-the-white-haus">Londonist, The White Haus</a></li>
+    <li><a href="https://www.yelp.co.uk/biz/smoking-goat-london-3">Yelp, Smoking Goat</a></li>
+    <li><a href="https://www.theinfatuation.com/london/guides/best-restaurants-camden">The Infatuation, Camden</a></li>
+    <li><a href="https://www.theinfatuation.com/london/guides/best-notting-hill-restaurant-bars">The Infatuation, Notting Hill</a></li>
+    <li><a href="https://calloohcallaybar.com/">Callooh Callay</a></li>
+    <li><a href="https://thenudge.com/london-bars/satans-whiskers/">The Nudge, Satan's Whiskers</a></li>
+    <li><a href="https://www.designmynight.com/london/bars/weird-and-wonderful-bars-in-london">DesignMyNight, weird &amp; wonderful bars</a></li>
+    <li><a href="https://www.londontravelgeek.co.uk/articles/london-public-transport-costs-and-fares/">London Travel Geek, 2026 fares</a></li>
+    <li><a href="https://www.strikecalendar.co.uk/union/rmt/londonundergroundstaffrmt">Strike Calendar, tube</a></li>
+    <li><a href="https://www.climatestotravel.com/climate/england/london">Climates to Travel, London</a></li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var KEY='london-pack-v1';
+  var state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  document.querySelectorAll('.pack').forEach(function(pack){
+    var list=pack.getAttribute('data-list');
+    var boxes=pack.querySelectorAll('input[type=checkbox]');
+    var counter=pack.querySelector('[data-count]');
+    function count(){ var n=0; boxes.forEach(function(b){ if(b.checked) n++; }); counter.textContent=n+' / '+boxes.length; }
+    boxes.forEach(function(b,i){
+      var id=list+'-'+i; b.id=id;
+      if(state[id]) b.checked=true;
+      b.addEventListener('change',function(){ state[id]=b.checked; save(); count(); });
+    });
+    count();
+  });
+  document.getElementById('resetPack').addEventListener('click',function(){
+    state={}; save();
+    document.querySelectorAll('.pack input[type=checkbox]').forEach(function(b){ b.checked=false; });
+    document.querySelectorAll('.pack').forEach(function(p){
+      var boxes=p.querySelectorAll('input[type=checkbox]');
+      p.querySelector('[data-count]').textContent='0 / '+boxes.length;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
